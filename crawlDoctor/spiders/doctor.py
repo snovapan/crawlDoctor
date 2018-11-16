@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import scrapy
 import copy
+import time
 from scrapy.spiders import CrawlSpider
 from crawlDoctor.items import DoctorItem
 
@@ -37,10 +38,26 @@ class DoctorSpider(CrawlSpider):
         for each in response.xpath('//*[@id="anchor"]/div[2]/div[@class="g-clear g-doc-info"]'):
             name = each.xpath('./dl/dt/a/text()').extract()[0].strip()
             title = each.xpath('./dl/dt/span/text()').extract()[0].strip()
-            introduction = each.xpath('./dl/dd/p/text()').extract()[0].strip()
+#            introduction = each.xpath('./dl/dd/p/text()').extract()[0].strip()
+            doctorlink = each.xpath('./dl/dt/a/@href').extract()[0].strip()
             item = copy.deepcopy(dept)
             item['name'] = name
             item['title'] = title
-            item['introduction'] = introduction
-            # 把数据交给管道文件
+#            item['introduction'] = introduction
+            item['doctorlink'] = doctorlink
+            time.sleep(0.1)
+            yield scrapy.Request(url=item['doctorlink'], meta={'doc': item}, callback=self.doctor_detail_parse)
+
+    def doctor_detail_parse(self, response):
+        doc = response.meta['doc']
+        for each in response.xpath('//*[@id="gc"]/div[@id="g-cfg"]/div[@class="grid-group"]/div[@class="grid-section expert-card fix-clear"]/div[@class="info"]/div[@class="detail word-break"]'):
+#           print(each.extract())
+            item = copy.deepcopy(doc)
+            item['introduction'] = ''
+            item['goodat'] = ''
+            if each.xpath('./div[@class="about"]/a/@data-description'):
+                item['introduction'] = each.xpath('./div[@class="about"]/a/@data-description').extract()[0].strip()
+            if each.xpath('./div[@class="goodat"]/span/text()'):
+                item['goodat'] = each.xpath('./div[@class="goodat"]/span/text()').extract()[0].strip()
+            # 把数据交给管道文件s
             yield item

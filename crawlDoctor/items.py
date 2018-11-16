@@ -21,5 +21,10 @@ class DoctorItem(scrapy.Item):
     name = scrapy.Field()
     # 职称
     title = scrapy.Field()
+    # 医生链接
+    doctorlink = scrapy.Field()
+    # 擅长
+    goodat = scrapy.Field()
     # 简介
     introduction = scrapy.Field()
+

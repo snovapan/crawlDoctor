@@ -36,8 +36,8 @@ class CrawldoctorPipeline(object):
         conn = self.getCon()
         try:
             with conn.cursor() as cursor:
-                val = [item['hospitalname'],item['bigdept'],item['smalldept'],item['name'],item['title'],item['introduction'],item['deptlink']]
-                sql = 'INSERT INTO `t_doctor`(`hospitalname`, `bigdept`, `smalldept`, `name`, `title`, `introduction`, `deptlink`) VALUES (%s, %s, %s, %s, %s, %s, %s)'
+                val = [item['hospitalname'],item['bigdept'],item['smalldept'],item['name'],item['title'],item['introduction'],item['deptlink'],item['doctorlink'],item['goodat']]
+                sql = 'INSERT INTO `t_doctor`(`hospitalname`, `bigdept`, `smalldept`, `name`, `title`, `introduction`, `deptlink`, `doctorlink`, `goodat`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)'
                 cursor.execute(sql, val)
                 # 如果没有设置自动提交事务，则这里需要手动提交一次
                 conn.commit()
@@ -49,3 +49,4 @@ class CrawldoctorPipeline(object):
         finally:
             # 关闭数据库连接
             conn.close()
+
